@@ -18,7 +18,7 @@ export const signup = async (req, res, next) => {
 
         const { name, email, password, role } = validationResult.data;
 
-        const user = createUser({ name, email, password, role});
+        const user = await createUser({ name, email, password, role});
 
         const token = jwttoken.sign({ id: user.id, email: user.email, role: user.role});
 
@@ -38,7 +38,7 @@ export const signup = async (req, res, next) => {
         logger.error('Signup error', e);
 
         if(e.message == 'User with this email already exists'){
-            return res.status(409).json({error: 'Email already exists'});
+            return res.status(409).json({error: 'User with this email already exists'});
         }
 
         next(e);

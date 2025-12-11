@@ -1,0 +1,31 @@
+version: '3.8'
+
+# Node.js application
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile 
+      target: production
+    container_name: acquisitions-app-prod
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - .env.production
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: "0.5"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - acquisitions-prod
+
+networks:
+  acquisitions-prod:
+    driver: bridge

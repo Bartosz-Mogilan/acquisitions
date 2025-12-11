@@ -9,7 +9,9 @@ export const createUser = async ({ name, email, password, role = 'user'}) => {
     try {
         const existingUser = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
-        if(existingUser > 0) throw new Error('User already exists');
+        if(Array.isArray(existingUser) && existingUser.length > 0){
+            throw new Error('User with this email already exists');
+        }
 
         const password_hash = await hashPassword(password);
 
@@ -68,6 +70,7 @@ export const authenticateUser = async ({email, password}) => {
         };
     } catch(e){
         logger.error(`Error autheticating user: ${e}`);
+        throw e;
     }
 };
 
